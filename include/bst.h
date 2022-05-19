@@ -1,66 +1,69 @@
 // Copyright 2021 NNTU-CS
 #ifndef INCLUDE_BST_H_
 #define INCLUDE_BST_H_
-
-template <typename T>
+#pragma once
+#pragma once
+template<typename T>
 class BST {
- public:
-  struct Node {
-    T val;
-    int count;
-    Node * l;
-    Node * r;
-  };
  private:
-  Node * rt;
-  Node * addNode(Node *rt, T val) {
-    if (rt == nullptr) {
-      rt = new Node;
-      rt->val = val;
-      rt->count = 1;
-      rt->l = rt->r = nullptr;
-    } else if (rt->val > val) {
-      rt->l = addNode(rt->l, val);
-    } else if (rt->val < val) {
-      rt->r = addNode(rt->r, val);
-    } else {
-      rt->count++;
+  struct Node {
+  T value;
+  int cnt = 0;
+  Node* left = nullptr;
+  Node* right = nullptr;;
+  };
+  Node* root;
+  Node* addNode(Node* root, const T& val) {
+    if (root == nullptr) {
+      root = new Node;
+      root->value = val;
+      root->cnt = 1;
+      root->left = root->right = nullptr;
+    } else if (root->value < val) {
+        root->left = addNode(root->left, val);
+      } else if (root->value > val) {
+          root->right = addNode(root->right, val);
+        } else {
+            root->cnt++;
+          }
+    return root;
     }
-    return rt;
-  }
-  int depthTree(Node *rt) {
-    if (rt == nullptr)
-      return 0;
-    if (rt->l == nullptr && rt->r == nullptr)
-      return 0;
-    int lh = depthTree(rt->l);
-    int rh = depthTree(rt->r);
-    return lh > rh ? lh + 1 : rh + 1;
-  }
-  int searchNode(Node *rt, T val) {
-    Node *t = rt;
-    if (rt == nullptr) {
-      return 0;
-    } else {
-      if (rt->val == val)
-        return rt->count;
-      else if (rt->val < val)
-        return searchNode(rt->r, val);
-      else
-        return searchNode(rt->l, val);
+    int searchNode(Node* root, const T& val) {
+      if (root == nullptr) {
+        return 0;
+      } else if (root->value == val) {
+          return root->cnt;
+        } else if (root->value < val) {
+            return searchNode(root->left, val);
+          } else {
+              return searchNode(root->right, val);
+            }
     }
-  }
+    int depth_p(Node* root) {
+      int lft = 0, rht = 0;
+      if (root == nullptr) {
+        return 0;
+      } else {
+          lft = depth_p(root->left);
+          rht = depth_p(root->right);
+        }
+        if (rht > lft) {
+            return ++rht;
+        } else {
+            return ++lft;
+          }
+    }
+
  public:
-  BST() : rt(nullptr) {}
-  ~BST() {}
-  void add(T val) {
-    rt = addNode(rt, val);
+  BST() :root(nullptr) {}
+  void Add(const T& val) {
+    root = addNode(root, val);
+  }
+  int search(const T& val) {
+    return searchNode(root, val);
   }
   int depth() {
-    return depthTree(rt);
-  }
-  int search(T val) {
-    return searchNode(rt, val);
+    return depth_p(root) - 1;
   }
 };
 #endif  // INCLUDE_BST_H_
